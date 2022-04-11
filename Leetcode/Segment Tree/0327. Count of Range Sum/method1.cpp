@@ -1,69 +1,37 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-struct segNode {
-    int val;
-    int l, r;
-    segNode *left, *right;
-    segNode(int _l, int _r) : val(0), l(_l), r(_r), left(nullptr), right(nullptr) {}
+//枚举全部的区间和，判断是否满足题意，时间复杂度O(n2)(TLE)
+class Solution {
+public:
+    int countRangeSum(vector<int>& nums, int lower, int upper) {
+        int n = nums.size(), ans = 0;
+        vector<long long> preSum(n + 1);
+        for(int i = 1; i <= n; ++i) {
+            preSum[i] += preSum[i - 1] + nums[i - 1];
+            for(int j = 0; j < i; ++j) {
+                long long sum = preSum[i] - preSum[j];
+                if(sum >= lower && sum <= upper) ++ans;
+            }
+        }
+        return ans;
+    }
 };
 
+//对[lower, upper]区间进行枚举，期望upper - lower小时获得较好性能，最坏时间复杂度O(n2)(TLE)
 class Solution {
-private:
-    segNode* root = nullptr;
-
 public:
-    segNode* build(int l, int r) {
-        auto root = new segNode(l, r);
-        if(l == r) return root;
-        int mid = l + ((r - l) >> 1);
-        root->left = build(l, mid);
-        root->right = build(mid + 1, r);
-        return root;
-    }
-    void insert(segNode* root, int index) {
-        ++root->val;
-        if(root->l == root->r) return;
-        int mid = root->l + ((root->r - root->l) >> 1);
-        if(index <= mid) {
-            insert(root->left, index);
-        } else {
-            insert(root->right, index);
-        }
-    }
-    int count(segNode* root, int a1, int a2) {
-        if(a1 > root->r || a2 < root->l) return 0;
-        if(a1 <= root->l && a2 >= root->r) return root->val;
-        return count(root->left, a1, a2) + count(root->right, a1, a2);
-    }
     int countRangeSum(vector<int>& nums, int lower, int upper) {
-        long long sum = 0;
-        vector<long long> preSum;
-        preSum.reserve(nums.size() + 1);
-        preSum.emplace_back(0);
-        for(auto num : nums) {
-            sum += num;
-            preSum.emplace_back(sum);
-        }
-        set<long long> numbers;
-        for(auto num : preSum) {
-            numbers.insert(num - upper);
-            numbers.insert(num);
-            numbers.insert(num - lower);
-        }
-
         unordered_map<long long, int> mp;
-        int idx = 0;
-        for(auto num : numbers) {
-            mp[num] = idx++;
-        }
-        root = build(0, mp.size() - 1);
-        int ans = 0;
-        for(auto num : preSum) {
-            int left = mp[num - upper];
-            int right = mp[num - lower];
-            ans += count(root, left, right);
-            insert(root, mp[num]);
+        int n = nums.size(), ans = 0;
+        long long sum = 0;
+        mp[0] = 1;
+        for(int i = 0; i < n; ++i) {
+            sum += nums[i];
+            for(int j = lower; j <= upper; ++j) {
+                ans += mp[sum - j];
+            }
+            mp[sum]++;
         }
         return ans;
     }

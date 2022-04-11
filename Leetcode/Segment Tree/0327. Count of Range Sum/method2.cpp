@@ -1,38 +1,42 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// Segment Tree
-class SegmentTree {
-private:
-    int n;
-    vector<int> tree;
-
-public:
-    SegmentTree(int _n) : n(_n), tree(n * 4) {}
-    void insert(int index, int node, int s, int e) {
-        ++tree[node];
-        if(s == e) {
-            return;
-        }
-        int mid = s + ((e - s) >> 1);
-        int l = node * 2 + 1, r = node * 2 + 2;
-        if(index <= mid) {
-            insert(index, l, s, mid);
-        } else {
-            insert(index, r, mid + 1, e);
-        }
-    }
-    int count(int left, int right, int node, int s, int e) {
-        if(left > e || right < s) return 0;
-        if(left <= s && right >= e) return tree[node];
-        int mid = s + ((e - s) >> 1);
-        int l = node * 2 + 1, r = node * 2 + 2;
-        return count(left, right, l, s, mid) + count(left, right, r, mid + 1, e);
-    }
+struct segNode {
+    int val;
+    int l, r;
+    segNode *left, *right;
+    segNode(int _l, int _r) : val(0), l(_l), r(_r), left(nullptr), right(nullptr) {}
 };
 
+//前缀和 + 离散化 + 链式线段树(TLE)
 class Solution {
+private:
+    segNode* root = nullptr;
+
 public:
+    segNode* build(int l, int r) {
+        auto root = new segNode(l, r);
+        if(l == r) return root;
+        int mid = l + ((r - l) >> 1);
+        root->left = build(l, mid);
+        root->right = build(mid + 1, r);
+        return root;
+    }
+    void insert(segNode* root, int index) {
+        ++root->val;
+        if(root->l == root->r) return;
+        int mid = root->l + ((root->r - root->l) >> 1);
+        if(index <= mid) {
+            insert(root->left, index);
+        } else {
+            insert(root->right, index);
+        }
+    }
+    int count(segNode* root, int a1, int a2) {
+        if(a1 > root->r || a2 < root->l) return 0;
+        if(a1 <= root->l && a2 >= root->r) return root->val;
+        return count(root->left, a1, a2) + count(root->right, a1, a2);
+    }
     int countRangeSum(vector<int>& nums, int lower, int upper) {
         long long sum = 0;
         vector<long long> preSum;
@@ -48,19 +52,18 @@ public:
             numbers.insert(num);
             numbers.insert(num - lower);
         }
-
         unordered_map<long long, int> mp;
         int idx = 0;
         for(auto num : numbers) {
             mp[num] = idx++;
         }
+        root = build(0, mp.size() - 1);
         int ans = 0;
-        SegmentTree tree(idx);
         for(auto num : preSum) {
             int left = mp[num - upper];
             int right = mp[num - lower];
-            ans += tree.count(left, right, 0, 0, idx - 1);
-            tree.insert(mp[num], 0, 0, idx - 1);
+            ans += count(root, left, right);
+            insert(root, mp[num]);
         }
         return ans;
     }
