@@ -19,10 +19,9 @@ ListNode* selectSort(ListNode* head) {
     if(!head || !head->next) return head;
     ListNode dummy(0, head);
     ListNode ans(0, nullptr);
-    ListNode* curr2 = &ans;
+    auto curr2 = &ans;
     while(dummy.next) {
-        ListNode* pos = &dummy;
-        ListNode* curr1 = dummy.next;
+        auto pos = &dummy, curr1 = dummy.next;
         while(curr1->next) {
             if(curr1->next->val < pos->next->val) {
                 pos = curr1;

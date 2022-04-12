@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-//自定义排序优化
+//自定义排序，直接hash定义排序准则
 class Solution {
 public:
     vector<int> relativeSortArray(vector<int>& arr1, vector<int>& arr2) {
