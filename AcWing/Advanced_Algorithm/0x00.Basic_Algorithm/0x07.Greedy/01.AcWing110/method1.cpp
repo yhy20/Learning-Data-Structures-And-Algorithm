@@ -19,26 +19,29 @@ const ll mod = 1e9 + 7;
     cin.tie(0);                  \
     cout.tie(0);
 
-int n;
-int g[20][20];
 int main() {
     ios;
-    cin >> n;
-    rep(i, 0, n) rep(j, 0, n) cin >> g[i][j];
-    int dp[1 << n][n];
-    ms(dp, 0x3f);
-    dp[1][0] = 0;
-    rep(i, 0, 1 << n) {
-        rep(j, 0, n) {
-            if((i >> j) & 1) {
-                rep(k, 0, n) {
-                    if(((i ^ (1 << j)) >> k) & 1) {
-                        dp[i][j] = min(dp[i][j], dp[i ^ (1 << j)][k] + g[k][j]);
-                    }
-                }
+    int n, m;
+    cin >> n >> m;
+    vector<PII> a(n), b(m);
+    rep(i, 0, n) cin >> a[i].fi >> a[i].se;
+    rep(i, 0, m) cin >> b[i].fi >> b[i].se;
+    sort(all(a), [](auto& l, auto& r) -> bool {
+        return l.fi > r.fi;
+    });
+    sort(all(b), [](auto& l, auto& r) -> bool {
+        return l.fi > r.fi;
+    });
+    int ans = 0;
+    rep(i, 0, n) {
+        rep(j, 0, m) {
+            if(a[i].fi <= b[j].fi && a[i].se >= b[j].fi && b[j].se > 0) {
+                --b[j].se;
+                ++ans;
+                break;
             }
         }
     }
-    cout << dp[(1 << n) - 1][n - 1];
+    cout << ans;
     return 0;
 }
