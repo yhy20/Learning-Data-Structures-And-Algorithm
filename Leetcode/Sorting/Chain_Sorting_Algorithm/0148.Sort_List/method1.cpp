@@ -10,18 +10,64 @@ struct ListNode {
     ListNode(int x, ListNode* next) : val(x), next(next) {}
 };
 
-//排序单向链表
 class Solution {
 public:
     ListNode* sortList(ListNode* head) {
+        srand((unsigned)time(NULL));
         // return bubbleSort(head);
-        // return insertSort(head);
         // return selectSort(head);
         // return selectSort1(head);
-        return mergeSort(head);
+        // return insertSort(head);
+        // return mergeSort(head);
+        // quickSort(head,nullptr);
+        quickSort1(head, nullptr);
+        return head;
     }
 
-    //仅交换值的bubble sort
+    //简单快速排序
+    void quickSort(ListNode* left, ListNode* right) {
+        if(left == right || left->next == right) {
+            return;
+        }
+        auto curr = left, index = left;
+        while(curr->next != right) {
+            if(curr->next->val <= left->val) {
+                swap(curr->next->val, index->next->val);
+                index = index->next;
+            }
+            curr = curr->next;
+        }
+        swap(left->val, index->val);
+        quickSort(left, index);
+        quickSort(index->next, right);
+    }
+
+    //简单优化版快速排序
+    void quickSort1(ListNode* left, ListNode* right) {
+        if(left == right || left->next == right) {
+            return;
+        }
+        int n = 0;
+        for(auto head = left; head != right; head = head->next) ++n;
+        int r = rand() % n;
+        auto m = left;
+        while(r--) m = m->next;
+        swap(left->val, m->val);
+        auto curr = left, index = left;
+        while(curr->next != right) {
+            if(curr->next->val <= left->val) {
+                swap(curr->next->val, index->next->val);
+                index = index->next;
+            }
+            curr = curr->next;
+        }
+        swap(left->val, index->val);
+        quickSort1(left, index);
+        quickSort1(index->next, right);
+    }
+
+    //冒泡排序相比选择，插入排序，swap次数太多，不太值得写交换结点版本的排序
+    //仅交换值版的冒泡排序
     ListNode* bubbleSort(ListNode* head) {
         if(!head || !head->next) return head;
         int n = 0;
@@ -41,7 +87,8 @@ public:
         return head;
     }
 
-    //交换实际结点版插入排序
+    //由于链表为单向链表，仅交换值版插入排序似乎没有比较简洁的实现
+    //交换实际结点版的插入排序
     ListNode* insertSort(ListNode* head) {
         if(!head || !head->next) return head;
         ListNode dummy(0, nullptr);
@@ -58,15 +105,32 @@ public:
         return dummy.next;
     }
 
-    //交换实际结点版的选择排序(双链表版)
+    //仅交换值版的选择排序
     ListNode* selectSort(ListNode* head) {
+        if(!head || !head->next) return head;
+        auto curr = head;
+        while(curr->next) {
+            auto pos = curr, node = curr->next;
+            while(node) {
+                if(node->val < pos->val) {
+                    pos = node;
+                }
+                node = node->next;
+            }
+            swap(curr->val, pos->val);
+            curr = curr->next;
+        }
+        return head;
+    }
+
+    //交换实际结点版的选择排序
+    ListNode* selectSort1(ListNode* head) {
         if(!head || !head->next) return head;
         ListNode dummy(0, head);
         ListNode ans(0, nullptr);
-        ListNode* curr2 = &ans;
+        auto curr2 = &ans;
         while(dummy.next) {
-            ListNode* pos = &dummy;
-            ListNode* curr1 = dummy.next;
+            auto pos = &dummy, curr1 = dummy.next;
             while(curr1->next) {
                 if(curr1->next->val < pos->next->val) {
                     pos = curr1;
@@ -81,8 +145,8 @@ public:
         return ans.next;
     }
 
-    //交换实际结点版选择(就地交换版)
-    ListNode* selectSort1(ListNode* head) {
+    //不分割链表，原地交换的选择排序
+    ListNode* selectSort2(ListNode* head) {
         if(!head || !head->next) return head;
         ListNode* dummy = new ListNode(0, head);
         ListNode* pos = dummy;
@@ -112,60 +176,38 @@ public:
         return head;
     }
 
-    //仅交换值版的选择排序
-    ListNode* selectSort2(ListNode* head) {
-        if(!head || !head->next) return head;
-        auto curr = head;
-        while(curr->next) {
-            auto pos = curr, node = curr->next;
-            while(node) {
-                if(node->val < pos->val) {
-                    pos = node;
-                }
-                node = node->next;
-            }
-            swap(curr->val, pos->val);
-            curr = curr->next;
-        }
-        return head;
-    }
-
-    //自上而下归并排序
+    //自上而下归并排序，找中间结点开销较大
     ListNode* mergeSort(ListNode* head) {
         if(!head || !head->next) return head;
         return merge(head, nullptr);
     }
 
     ListNode* merge(ListNode* left, ListNode* right) {
-        if(left == right)
-            return left;
         if(left->next == right) {
             left->next = nullptr;
             return left;
         }
-        ListNode *fast = left, *slow = left;
+        auto fast = left, slow = left;
         while(fast != right && fast->next != right) {
             fast = fast->next->next;
             slow = slow->next;
         }
-        ListNode* head1 = merge(left, slow);
-        ListNode* head2 = merge(slow, right);
-        ListNode* dummy = new ListNode(0, nullptr);
-        ListNode* curr = dummy;
-        while(head1 && head2) {
-            if(head1->val <= head2->val) {
-                curr->next = head1;
-                head1 = head1->next;
+        auto l1 = merge(left, slow);
+        auto l2 = merge(slow, right);
+        ListNode dummy(0, nullptr);
+        auto curr = &dummy;
+        while(l1 && l2) {
+            if(l1->val <= l2->val) {
+                curr->next = l1;
+                l1 = l1->next;
             } else {
-                curr->next = head2;
-                head2 = head2->next;
+                curr->next = l2;
+                l2 = l2->next;
             }
             curr = curr->next;
         }
-        curr->next = head1 ? head1 : head2;
-        curr = dummy->next;
-        delete dummy;
-        return curr;
+        curr->next = l1 ? l1 : l2;
+        return dummy.next;
     }
 };
 
