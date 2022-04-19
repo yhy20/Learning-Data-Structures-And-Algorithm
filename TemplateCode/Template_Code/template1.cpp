@@ -1,20 +1,3 @@
-#include <bits/stdc++.h>
-using namespace std;
-#define rep(i, a, n) for(int i = a; i < n; ++i)
-#define per(i, a, n) for(int i = n - 1; i >= a; --i)
-#define ms(x, y) memset(x, y, sizeof(x));
-#define all(x) x.begin(), x.end()
-#define rall(x) x.rbegin(), x.rend()
-#define sz(x) ((int)(x).size());
-#define pb push_back
-#define fi first
-#define se second
-typedef pair<int, int> PII;
-typedef vector<int> VI;
-typedef long long ll;
-typedef double db;
-const ll mod = 1e9 + 7;
-
 template <typename T>
 T op_min(T a, T b) { return min(a, b); }
 
@@ -27,6 +10,8 @@ T op_sum(T a, T b) { return a + b; }
 template <typename T>
 T init_val() { return T(0); }
 
+//迭代实现的普适线段树，支持单点修改，单点增加，区间查询等操作。
+//对区间的操作由op函数定义, init_val表示初始化值
 template <typename T, T (*op)(T, T), T (*e)()>
 class SegTree {
 public:
@@ -64,8 +49,8 @@ public:
         assert(0 <= p && p < n);
         return d[p + size];
     }
-    // if l != r return op(d[l], ..., d[r - 1])
     // if l == r return e()
+    // if l != r return op(d[l], ..., d[r - 1])
     T range(int l, int r) const {
         assert(0 <= l && l <= r && r <= n);
         T sml = e(), smr = e();
@@ -80,10 +65,11 @@ public:
         }
         return op(sml, smr);
     }
-    // if n != 0 return op(d[0], ..., d[n - 1])
     // if n == 0 return e()
+    // if n != 0 return op(d[0], ..., d[n - 1])
     T all_range() const { return d[1]; }
 
+    //
     template <bool (*f)(T)>
     int max_right(int l) const {
         return max_right(l, [](T x) { return f(x); });
@@ -152,7 +138,3 @@ private:
         return x;
     }
 };
-
-int main() {
-    return 0;
-}

@@ -19,7 +19,7 @@ public:
         d = std::vector<T>(n * 4, e());
     }
     explicit SegTree(const std::vector<T>& v) : n(int(v.size())) {
-        assert(v.size() > 0);
+        assert(int(v.size()) > 0);
         d = std::vector<T>(n * 4, e());
         build(0, v, 0, n - 1);
     }
@@ -34,7 +34,7 @@ public:
         build(rchild, v, mid + 1, r);
         d[p] = op(d[lchild], d[rchild]);
     }
-    void set(int p, int idx, T x, int l, int r) {
+    void change(int p, int idx, T x, int l, int r) {
         if(l == r) {
             d[p] = x;
             return;
@@ -42,9 +42,9 @@ public:
         int mid = l + ((r - l) >> 1);
         int lchild = p * 2 + 1, rchild = p * 2 + 2;
         if(idx <= mid) {
-            set(lchild, idx, x, l, mid);
+            change(lchild, idx, x, l, mid);
         } else {
-            set(rchild, idx, x, mid + 1, r);
+            change(rchild, idx, x, mid + 1, r);
         }
         d[p] = op(d[lchild], d[rchild]);
     }
@@ -64,5 +64,9 @@ public:
 
 private:
     int n;
-    std::vector<T> d;
+    std::vector<Node> d;
+    struct Node{
+        int l, r;
+        T val;
+    };
 };
