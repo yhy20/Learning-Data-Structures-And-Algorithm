@@ -1,3 +1,24 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define rep(i, a, n) for(int i = a; i < n; ++i)
+#define per(i, a, n) for(int i = n - 1; i >= a; --i)
+#define ms(x, y) memset(x, y, sizeof(x));
+#define all(x) x.begin(), x.end()
+#define sz(x) ((int)(x).size());
+#define rall(x) x.rbegin(), x.rend()
+#define pb push_back
+#define fi first
+#define se second
+typedef pair<int, int> PII;
+typedef vector<int> VI;
+typedef long long ll;
+typedef double db;
+const ll mod = 1e9 + 7;
+#define ios                      \
+    ios::sync_with_stdio(false); \
+    cin.tie(0);                  \
+    cout.tie(0);
+
 template <typename T>
 T op_min(T a, T b) { return min(a, b); }
 
@@ -27,10 +48,6 @@ public:
     void set(int idx, T x) {
         assert(0 <= idx && idx < n);
         set(0, idx, x, 0, n - 1);
-    }
-    void add(int idx, T x) {
-        assert(0 <= idx && idx < n);
-        add(0, idx, x, 0, n - 1);
     }
     T range(int left, int right) {
         assert(0 <= left && left - 1 <= right && right < n);
@@ -67,22 +84,6 @@ private:
         }
         d[p] = op(d[lchild], d[rchild]);
     }
-
-    void add(int p, int idx, T x, int l, int r) {
-        if(l == r) {
-            d[p] += x;
-            return;
-        }
-        int mid = l + ((r - l) >> 1);
-        int lchild = p * 2 + 1, rchild = p * 2 + 2;
-        if(idx <= mid) {
-            add(lchild, idx, x, l, mid);
-        } else {
-            add(rchild, idx, x, mid + 1, r);
-        }
-        d[p] = op(d[lchild], d[rchild]);
-    }
-
     T range(int p, int left, int right, int l, int r) const {
         if(left <= l && right >= r) return d[p];
         int mid = l + ((r - l) >> 1);
@@ -96,3 +97,55 @@ private:
         }
     }
 };
+
+struct node {
+    int sum, val, lmax, rmax;
+    node() {}
+    node(int sum, int val, int lmax, int rmax) {
+        this->sum = sum;
+        this->val = val;
+        this->lmax = lmax;
+        this->rmax = rmax;
+    }
+    node(const node& r){
+        sum = r.sum;
+        val = r.val;
+        lmax = r.lmax;
+        rmax = r.rmax;
+    }
+};
+
+node op_s(node l, node r) {
+    node ret;
+    ret.sum = l.sum + r.sum;
+    ret.lmax = max(l.lmax, l.sum + r.lmax);
+    ret.rmax = max(r.rmax, r.sum + l.rmax);
+    ret.val = max({l.val, r.val, l.rmax + r.lmax});
+    return ret;
+}
+
+node init() {
+    return node(0, 0, 0, 0);
+}
+int main() {
+    ios;
+    int n, m;
+    cin >> n >> m;
+    vector<node>a(n);
+    rep(i, 0, n) {
+        int x;
+        cin >> x;
+        a[i] = node(x, x, x, x);
+    }
+    SegTree<node, op_s, init> tree(a);
+    rep(i, 0, m) {
+        int num, x, y;
+        cin >> num >> x >> y;
+        if(num == 1) {
+            cout << tree.range(x, y).val << endl;
+        } else {
+            tree.set(x, node(y, y, y, y));
+        }
+    }
+    return 0;
+}
