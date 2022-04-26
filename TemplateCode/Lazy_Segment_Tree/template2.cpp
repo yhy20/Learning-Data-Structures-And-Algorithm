@@ -86,50 +86,50 @@ private:
     }
 };
 
-namespace sg {
+// namespace sg {
 
-#define lson o * 2, l, (l + r) / 2
-#define rson o * 2 + 1, (l + r) / 2 + 1, r
-    void up(int o, int l, int r) {
-        if(l == r)
-            p[o] = P();
-        else
-            p[o] = p[o * 2] & p[o * 2 + 1];
-        p[o].up(q[o]);
-    }
-    void down(int o, int l, int r) {
-        q[o * 2] += q[o];
-        q[o * 2 + 1] += q[o];
-        q[o] = Q();
-        up(lson);
-        up(rson);
-    }
-    template <typename T>
-    void build(T&& f, int o = 1, int l = 1, int r = n) {
-        if(l == r)
-            q[o] = f(l);
-        else {
-            build(f, lson);
-            build(f, rson);
-            q[o] = Q();
-        }
-        up(o, l, r);
-    }
-    P query(int ql, int qr, int o = 1, int l = 1, int r = n) {
-        if(ql > r || l > qr) return P();
-        if(ql <= l && r <= qr) return p[o];
-        down(o, l, r);
-        return query(ql, qr, lson) & query(ql, qr, rson);
-    }
-    void update(int ql, int qr, const Q& v, int o = 1, int l = 1, int r = n) {
-        if(ql > r || l > qr) return;
-        if(ql <= l && r <= qr)
-            q[o] += v;
-        else {
-            down(o, l, r);
-            update(ql, qr, v, lson);
-            update(ql, qr, v, rson);
-        }
-        up(o, l, r);
-    }
-}  // namespace sg
+// #define lson o * 2, l, (l + r) / 2
+// #define rson o * 2 + 1, (l + r) / 2 + 1, r
+//     void up(int o, int l, int r) {
+//         if(l == r)
+//             p[o] = P();
+//         else
+//             p[o] = p[o * 2] & p[o * 2 + 1];
+//         p[o].up(q[o]);
+//     }
+//     void down(int o, int l, int r) {
+//         q[o * 2] += q[o];
+//         q[o * 2 + 1] += q[o];
+//         q[o] = Q();
+//         up(lson);
+//         up(rson);
+//     }
+//     template <typename T>
+//     void build(T&& f, int o = 1, int l = 1, int r = n) {
+//         if(l == r)
+//             q[o] = f(l);
+//         else {
+//             build(f, lson);
+//             build(f, rson);
+//             q[o] = Q();
+//         }
+//         up(o, l, r);
+//     }
+//     P query(int ql, int qr, int o = 1, int l = 1, int r = n) {
+//         if(ql > r || l > qr) return P();
+//         if(ql <= l && r <= qr) return p[o];
+//         down(o, l, r);
+//         return query(ql, qr, lson) & query(ql, qr, rson);
+//     }
+//     void update(int ql, int qr, const Q& v, int o = 1, int l = 1, int r = n) {
+//         if(ql > r || l > qr) return;
+//         if(ql <= l && r <= qr)
+//             q[o] += v;
+//         else {
+//             down(o, l, r);
+//             update(ql, qr, v, lson);
+//             update(ql, qr, v, rson);
+//         }
+//         up(o, l, r);
+//     }
+// }  // namespace sg
