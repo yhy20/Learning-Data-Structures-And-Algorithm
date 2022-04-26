@@ -10,7 +10,7 @@ struct ListNode {
     ListNode(int x, ListNode* next) : val(x), next(next) {}
 };
 
-//链表中间左结点
+//遍历区间[head, nullptr)，找打区间[head, end]左边的结点
 class Solution {
 public:
     ListNode* middleNode(ListNode* head) {

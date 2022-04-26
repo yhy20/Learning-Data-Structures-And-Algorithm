@@ -24,6 +24,8 @@ struct ListNode {
     ListNode(int x, ListNode* next) : val(x), next(next) {}
 };
 
+//递归实现反转链表
+//注意return要返回新的头节点
 class Solution {
 public:
     ListNode* reverseList(ListNode* head) {

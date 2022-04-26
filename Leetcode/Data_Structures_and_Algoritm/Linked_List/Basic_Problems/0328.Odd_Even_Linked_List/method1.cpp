@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
 #define rep(i, a, n) for(int i = a; i < n; ++i)
 #define per(i, a, n) for(int i = n - 1; i >= a; --i)
@@ -15,7 +15,6 @@ typedef long long ll;
 typedef double db;
 const ll mod = 1e9 + 7;
 
-// kDefinition for singly-linked list.
 struct ListNode {
     int val;
     ListNode* next;
@@ -24,25 +23,33 @@ struct ListNode {
     ListNode(int x, ListNode* next) : val(x), next(next) {}
 };
 
-//迭代实现反转链表
 class Solution {
 public:
-    ListNode* reverseList(ListNode* head) {
-        if(!head || !head->next) return head;
-        auto prev = head, curr = head->next;
-        head->next = nullptr;
-        while(curr) {
-            auto next = curr->next;
-            curr->next = prev;
-            prev = curr;
-            curr = next;
+    ListNode* oddEvenList(ListNode* head) {
+        ListNode head1, head2;
+        ListNode *curr1 = &head1, *curr2 = &head2;
+        bool isOdd = true;
+        while(head) {
+            if(isOdd){
+                curr1->next= head;
+                curr1 = curr1->next;
+                isOdd = false;
+            }
+            else{
+                curr2->next = head;
+                curr2 = curr2->next;
+                isOdd = true;
+            }
+            head = head->next;
         }
-        return prev;
+        curr1->next = head2.next;
+        curr2->next = nullptr;
+        return head1.next;
     }
 };
 
-int main() {
+int main(){
     Solution s;
-
+    
     return 0;
 }

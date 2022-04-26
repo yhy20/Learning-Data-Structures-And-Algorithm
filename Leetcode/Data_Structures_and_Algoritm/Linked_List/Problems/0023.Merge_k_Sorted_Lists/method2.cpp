@@ -15,7 +15,6 @@ typedef long long ll;
 typedef double db;
 const ll mod = 1e9 + 7;
 
-// kDefinition for singly-linked list.
 struct ListNode {
     int val;
     ListNode* next;
@@ -24,20 +23,33 @@ struct ListNode {
     ListNode(int x, ListNode* next) : val(x), next(next) {}
 };
 
-//迭代实现反转链表
+//优先级队列多路归并
 class Solution {
 public:
-    ListNode* reverseList(ListNode* head) {
-        if(!head || !head->next) return head;
-        auto prev = head, curr = head->next;
-        head->next = nullptr;
-        while(curr) {
-            auto next = curr->next;
-            curr->next = prev;
-            prev = curr;
-            curr = next;
+    struct Status {
+        int val;
+        ListNode* ptr;
+        Status(int val, ListNode* ptr) : val(val), ptr(ptr) {}
+        bool operator>(const Status& r) const {
+            return val > r.val;
         }
-        return prev;
+    };
+
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        priority_queue<Status, vector<Status>, greater<Status>> q;
+        for(auto node : lists) {
+            if(node) q.emplace(node->val, node);
+        }
+
+        ListNode dummy, *curr = &dummy;
+        while(!q.empty()) {
+            auto [val, ptr] = q.top();
+            q.pop();
+            curr->next = ptr;
+            curr = curr->next;
+            if(ptr->next) q.emplace(ptr->next->val, ptr->next);
+        }
+        return dummy.next;
     }
 };
 

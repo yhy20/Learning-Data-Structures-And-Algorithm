@@ -10,14 +10,13 @@ struct ListNode {
     ListNode(int x, ListNode* next) : val(x), next(next) {}
 };
 
-//链表中间右结点
+//遍历区间[head, nullptr)，找打区间[head, end]右边的结点
 class Solution {
 public:
     ListNode* middleNode(ListNode* head) {
         auto fast = head, slow = head;
         while(fast && fast->next) {
             fast = fast->next->next;
-            ;
             slow = slow->next;
         }
         return slow;
