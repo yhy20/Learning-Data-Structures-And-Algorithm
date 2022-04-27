@@ -70,7 +70,7 @@ void LinkedList<T>::push_front(const T& val) {
 template <typename T>
 void LinkedList<T>::push_back(const T& val) {
     ++listSize;
-    tail->next = new LLNode<T>(val, tail->next);
+    tail->next = new LLNode<T>(val);
     tail = tail->next;
 }
 
