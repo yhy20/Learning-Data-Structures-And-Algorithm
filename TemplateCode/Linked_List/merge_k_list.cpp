@@ -15,7 +15,7 @@ struct ListNode {
     ListNode(int x, ListNode* next) : val(x), next(next) {}
 };
 
-//直接归并排序
+//直接归并
 class Solution {
 public:
     ListNode* merge(vector<ListNode*>& lists, int l, int r) {

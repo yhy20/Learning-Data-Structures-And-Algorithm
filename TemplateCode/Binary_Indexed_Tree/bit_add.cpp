@@ -22,16 +22,6 @@ public:
     //求闭区间[l, r]的值
     T sum(int l, int r) { return sum(r) - sum(l - 1); }
 
-    int kth(T x) {
-        int ret = 0;
-        for(int i = 1 << 20; i >= 1; i >>= 1)
-            if(ret + i < n && c[ret + i] < x) {
-                ret += i;
-                x -= c[ret];
-            }
-        return ret + 1;
-    }
-
 private:
     int n;
     vector<T> c;
