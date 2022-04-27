@@ -18,103 +18,154 @@ template <class T>
 class DoublyLinkedList {
 public:
     DoublyLinkedList() {
-        head = tail = 0;
+        listSize = 0;
+        head = tail = &dummy;
     }
     ~DoublyLinkedList() {
         clear();
     }
-    void addToDLLTail(const T&);
-    T deleteFromDLLTail();
-    
-    bool isEmpty() const {
-        return head == 0;
+    T front() const {
+        return head->next->val;
     }
+    T back() const {
+        return tail->val;
+    }
+    bool empty() const {
+        return listSize == 0;
+    }
+    size_t size() {
+        return listSize;
+    }
+    T operator[](size_t index) const {
+        return get(index);
+    }
+    T get(size_t index) const;
+    void push_front(const T& val);
+    void push_back(const T& val);
+    void pop_front();
+    void pop_back();
+    void insert(size_t index, const T& val);
+    void erase(size_t index);
+    void output(ostream& out) const;
     void clear();
-    void setToNull() {
-        head = tail = 0;
-    }
-    void addToDLLHead(const T&);
-    T deleteFromDLLHead();
-    T& firstEl();
-    T* find(const T&) const;
 
 protected:
+    size_t listSize;
+    DLLNode<T> dummy;
     DLLNode<T>*head, *tail;
-    friend ostream& operator<<(ostream& out, const DoublyLinkedList<T>& dll) {
-        for(DLLNode<T>* tmp = dll.head; tmp != 0; tmp = tmp->next)
-            out << tmp->info << ' ';
-        return out;
-    }
 };
 
-template <class T>
-void DoublyLinkedList<T>::addToDLLHead(const T& el) {
-    if(head != 0) {
-        head = new DLLNode<T>(el, head, 0);
-        head->next->prev = head;
-    } else
-        head = tail = new DLLNode<T>(el);
-}
-
-template <class T>
-void DoublyLinkedList<T>::addToDLLTail(const T& el) {
-    if(tail != 0) {
-        tail = new DLLNode<T>(el, 0, tail);
-        tail->prev->next = tail;
-    } else
-        head = tail = new DLLNode<T>(el);
-}
-
-template <class T>
-T DoublyLinkedList<T>::deleteFromDLLHead() {
-    T el = head->info;
-    if(head == tail) {  // if only one DLLNode on the list;
-        delete head;
-        head = tail = 0;
-    } else {  // if more than one DLLNode in the list;
-        head = head->next;
-        delete head->prev;
-        head->prev = 0;
+template <typename T>
+T DoublyLinkedList<T>::get(size_t index) const {
+    assert(index >= 0 && index < listSize);
+    size_t t = 0;
+    DLLNode<T>* curr = head;
+    while(t++ <= index) {
+        curr = curr->next;
     }
-    return el;
+    return curr->val;
 }
 
-template <class T>
-T DoublyLinkedList<T>::deleteFromDLLTail() {
-    T el = tail->info;
-    if(head == tail) {  // if only one DLLNode on the list;
-        delete head;
-        head = tail = 0;
-    } else {  // if more than one DLLNode in the list;
-        tail = tail->prev;
-        delete tail->next;
-        tail->next = 0;
+template <typename T>
+void DoublyLinkedList<T>::push_front(const T& val) {
+    if(listSize == 0) {
+        push_back(val);
+        return;
     }
-    return el;
+    ++listSize;
+    head->next = new DLLNode<T>(val, head, head->next);
+    head->next->next->prev = head->next;
 }
 
-template <class T>
-T* DoublyLinkedList<T>::find(const T& el) const {
-    DLLNode<T>* tmp = head;
-    for(; tmp != 0 && !(tmp->info == el);  // overloaded ==
-        tmp = tmp->next)
-        ;
-    if(tmp == 0)
-        return 0;
-    else
-        return &tmp->info;
+template <typename T>
+void DoublyLinkedList<T>::push_back(const T& val) {
+    ++listSize;
+    tail->next = new DLLNode<T>(val, tail, nullptr);
+    tail = tail->next;
 }
 
-template <class T>
-T& DoublyLinkedList<T>::firstEl() {
-    return head->info;
+template <typename T>
+void DoublyLinkedList<T>::pop_front() {
+    if(listSize == 0) return;
+    --listSize;
+    if(head->next == tail) {
+        delete head->next;
+        head->next = nullptr;
+        tail = head;
+        return;
+    }
+    auto toDelete = head->next;
+    head->next = toDelete->next;
+    toDelete->next->prev = head;
+    delete toDelete;
 }
 
-template <class T>
+template <typename T>
+void DoublyLinkedList<T>::pop_back() {
+    if(listSize == 0) return;
+    --listSize;
+    tail = tail->prev;
+    delete tail->next;
+    tail->next = nullptr;
+}
+
+template <typename T>
+void DoublyLinkedList<T>::insert(size_t index, const T& val) {
+    assert(index >= 0 && index <= listSize);
+    if(index == listSize) {
+        push_back(val);
+        return;
+    }
+    ++listSize;
+    size_t t = 0;
+    DLLNode<T>* curr = head;
+    while(t++ < index) {
+        curr = curr->next;
+    }
+    curr->next = new DLLNode<T>(val, curr, curr->next);
+    curr->next->next->prev = curr->next;
+}
+
+template <typename T>
+void DoublyLinkedList<T>::erase(size_t index) {
+    assert(index >= 0 && index < listSize);
+    if(index == listSize - 1) {
+        pop_back();
+        return;
+    }
+    --listSize;
+    size_t t = 0;
+    DLLNode<T>* curr = head;
+    while(t++ < index) {
+        curr = curr->next;
+    }
+    auto toDelete = curr->next;
+    curr->next = toDelete->next;
+    toDelete->next->prev = curr;
+    delete toDelete;
+}
+template <typename T>
+void DoublyLinkedList<T>::output(ostream& out) const {
+    for(auto curr = head->next; curr; curr = curr->next) {
+        out << curr->val << " ";
+    }
+}
+
+template <typename T>
 void DoublyLinkedList<T>::clear() {
-    for(DLLNode<T>* tmp; head != 0;) {
-        tmp = head;
-        head = head->next;
-        delete tmp;
+    DLLNode<T>* curr = head->next;
+    head->next = nullptr;
+    while(curr) {
+        auto next = curr->next;
+        delete curr;
+        curr = next;
     }
+    listSize = 0;
+    tail = head;
+}
+
+template <typename T>
+ostream& operator<<(ostream& out, const DoublyLinkedList<T>& list) {
+    list.output(out);
+    return out;
 }
