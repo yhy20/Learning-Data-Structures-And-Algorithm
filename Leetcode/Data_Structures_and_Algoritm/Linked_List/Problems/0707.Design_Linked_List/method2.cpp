@@ -1,5 +1,19 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
+#define rep(i, a, n) for(int i = a; i < n; ++i)
+#define per(i, a, n) for(int i = n - 1; i >= a; --i)
+#define ms(x, y) memset(x, y, sizeof(x));
+#define all(x) x.begin(), x.end()
+#define rall(x) x.rbegin(), x.rend()
+#define sz(x) ((int)(x).size());
+#define pb push_back
+#define fi first
+#define se second
+typedef pair<int, int> PII;
+typedef vector<int> VI;
+typedef long long ll;
+typedef double db;
+const ll mod = 1e9 + 7;
 
 template <class T>
 class DLLNode {
@@ -33,20 +47,20 @@ public:
     bool empty() const {
         return listSize == 0;
     }
-    size_t size() const {
+    size_t size() {
         return listSize;
     }
-    T operator[](size_t index) const {
+    T operator[](size_t index) const{
         return get(index);
     }
     T get(size_t index) const;
-    void push_front(const T&);
-    void push_back(const T&);
-    T pop_front();
-    T pop_back();
-    void insert(size_t, const T&);
-    T erase(size_t);
-    void output(ostream&) const;
+    void push_front(const T& val);
+    void push_back(const T& val);
+    void pop_front();
+    void pop_back();
+    void insert(size_t index, const T& val);
+    void erase(size_t index);
+    void output(ostream& out) const;
     void clear();
 
 protected:
@@ -68,7 +82,7 @@ T DoublyLinkedList<T>::get(size_t index) const {
 
 template <typename T>
 void DoublyLinkedList<T>::push_front(const T& val) {
-    if(listSize == 0) {
+    if(listSize == 0){
         push_back(val);
         return;
     }
@@ -85,31 +99,28 @@ void DoublyLinkedList<T>::push_back(const T& val) {
 }
 
 template <typename T>
-T DoublyLinkedList<T>::pop_front() {
-    assert(listSize > 0);
+void DoublyLinkedList<T>::pop_front() {
+    if(listSize == 0) return;
     --listSize;
-    auto toDelete = head->next;
     if(head->next == tail) {
+        delete head->next;
         head->next = nullptr;
         tail = head;
-    } else {
-        head->next = toDelete->next;
-        toDelete->next->prev = head;
+        return;
     }
-    T tmp = toDelete->val;
+    auto toDelete = head->next;
+    head->next = toDelete->next;
+    toDelete->next->prev = head;
     delete toDelete;
-    return tmp;
 }
 
 template <typename T>
-T DoublyLinkedList<T>::pop_back() {
-    assert(listSize > 0);
+void DoublyLinkedList<T>::pop_back() {
+    if(listSize == 0) return;
     --listSize;
-    T tmp = tail->val;
     tail = tail->prev;
     delete tail->next;
     tail->next = nullptr;
-    return tmp;
 }
 
 template <typename T>
@@ -130,10 +141,11 @@ void DoublyLinkedList<T>::insert(size_t index, const T& val) {
 }
 
 template <typename T>
-T DoublyLinkedList<T>::erase(size_t index) {
+void DoublyLinkedList<T>::erase(size_t index) {
     assert(index >= 0 && index < listSize);
-    if(index == listSize - 1) {
-        return pop_back();
+    if(index == listSize - 1){
+        pop_back();
+        return;
     }
     --listSize;
     size_t t = 0;
@@ -144,9 +156,7 @@ T DoublyLinkedList<T>::erase(size_t index) {
     auto toDelete = curr->next;
     curr->next = toDelete->next;
     toDelete->next->prev = curr;
-    T tmp = toDelete->val;
     delete toDelete;
-    return tmp;
 }
 template <typename T>
 void DoublyLinkedList<T>::output(ostream& out) const {
@@ -172,4 +182,43 @@ template <typename T>
 ostream& operator<<(ostream& out, const DoublyLinkedList<T>& list) {
     list.output(out);
     return out;
+}
+
+class MyLinkedList {
+public:
+    DoublyLinkedList<int> list;
+    MyLinkedList() {}
+    
+    int get(int index) {
+        if(index < 0 || index >= list.size()) return -1;
+        return list.get(index);
+    }
+    
+    void addAtHead(int val) {
+        list.push_front(val);
+    }
+    
+    void addAtTail(int val) {
+        list.push_back(val);
+    }
+    
+    void addAtIndex(int index, int val) {
+        if(index < 0){
+            list.push_front(val);
+            return;
+        }
+        if(index > list.size()) return;
+        list.insert(index, val);
+    }
+    
+    void deleteAtIndex(int index) {
+        if(index < 0 || index >= list.size()) return;
+        list.erase(index);
+    }
+};
+
+int main(){
+    MyLinkedList s;
+    
+    return 0;
 }

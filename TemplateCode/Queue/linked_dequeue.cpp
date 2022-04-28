@@ -173,3 +173,41 @@ ostream& operator<<(ostream& out, const DoublyLinkedList<T>& list) {
     list.output(out);
     return out;
 }
+
+template <typename T>
+class LinkedDequeue {
+public:
+    LinkedDequeue() {}
+    ~LinkedDequeue() {}
+    void push_front(const T& val) {
+        pool.push_front(val);
+    }
+    void push_back(const T& val) {
+        pool.push_back(val);
+    }
+    T pop_front() {
+        assert(pool.size() > 0);
+        return pool.pop_front();
+    }
+    T pop_back() {
+        assert(pool.size() > 0);
+        return pool.pop_back();
+    }
+    T front() const {
+        assert(pool.size() > 0);
+        return pool.front();
+    }
+    T back() const {
+        assert(pool.size() > 0);
+        return pool.back();
+    }
+    size_t size() const {
+        return pool.size();
+    }
+    bool empty() const {
+        return pool.empty();
+    }
+
+protected:
+    DoublyLinkedList<T> pool;
+};

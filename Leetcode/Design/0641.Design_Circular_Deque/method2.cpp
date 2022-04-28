@@ -173,3 +173,84 @@ ostream& operator<<(ostream& out, const DoublyLinkedList<T>& list) {
     list.output(out);
     return out;
 }
+
+template <typename T>
+class LinkedDequeue {
+public:
+    LinkedDequeue() {}
+    ~LinkedDequeue() {}
+    void push_front(const T& val) {
+        pool.push_front(val);
+    }
+    void push_back(const T& val) {
+        pool.push_back(val);
+    }
+    T pop_front() {
+        assert(pool.size() > 0);
+        return pool.pop_front();
+    }
+    T pop_back() {
+        assert(pool.size() > 0);
+        return pool.pop_back();
+    }
+    T front() const {
+        assert(pool.size() > 0);
+        return pool.front();
+    }
+    T back() const {
+        assert(pool.size() > 0);
+        return pool.back();
+    }
+    size_t size() const {
+        return pool.size();
+    }
+    bool empty() const {
+        return pool.empty();
+    }
+
+protected:
+    DoublyLinkedList<T> pool;
+};
+
+class MyCircularDeque {
+public:
+    MyCircularDeque(int c) : capacity(c) {}
+    bool insertFront(int val) {
+        if(q.size() == capacity) return false;
+        q.push_front(val);
+        return true;
+    }
+    bool insertLast(int val) {
+        if(q.size() == capacity) return false;
+        q.push_back(val);
+        return true;
+    }
+    bool deleteFront() {
+        if(q.empty()) return false;
+        q.pop_front();
+        return true;
+    }
+    bool deleteLast() {
+        if(q.empty()) return false;
+        q.pop_back();
+        return true;
+    }
+    int getFront() {
+        if(q.empty()) return -1;
+        return q.front();
+    }
+    int getRear() {
+        if(q.empty()) return -1;
+        return q.back();
+    }
+    bool isEmpty() {
+        return q.empty();
+    }
+    bool isFull() {
+        return q.size() == capacity;
+    }
+
+protected:
+    int capacity;
+    LinkedDequeue<int> q;
+};

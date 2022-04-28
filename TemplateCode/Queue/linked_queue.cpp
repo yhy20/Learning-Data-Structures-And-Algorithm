@@ -29,7 +29,7 @@ public:
     bool empty() const {
         return listSize == 0;
     }
-    size_t size() {
+    size_t size() const {
         return listSize;
     }
     T operator[](size_t index) const {
@@ -71,7 +71,9 @@ void LinkedList<T>::push_front(const T& val) {
 template <typename T>
 T LinkedList<T>::pop_front() {
     assert(listSize > 0);
+    --listSize;
     auto toDelete = head->next;
+    if(toDelete == tail) tail = head;
     head->next = toDelete->next;
     T tmp = toDelete->val;
     delete toDelete;
@@ -143,3 +145,34 @@ ostream& operator<<(ostream& out, const LinkedList<T>& list) {
     list.output(out);
     return out;
 }
+
+template <typename T>
+class LinkedQueue {
+public:
+    LinkedQueue() {}
+    ~LinkedQueue() {}
+    void push(const T& val) {
+        pool.push_back(val);
+    }
+    T pop() {
+        assert(pool.size() > 0);
+        return pool.pop_front();
+    }
+    T front() const {
+        assert(pool.size() > 0);
+        return pool.front();
+    }
+    T back() const {
+        assert(pool.size() > 0);
+        return pool.back();
+    }
+    size_t size() const {
+        return pool.size();
+    }
+    bool empty() const {
+        return pool.empty();
+    }
+
+protected:
+    LinkedList<T> pool;
+};

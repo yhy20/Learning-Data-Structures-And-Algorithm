@@ -29,19 +29,19 @@ public:
     bool empty() const {
         return listSize == 0;
     }
-    size_t size() {
+    size_t size() const {
         return listSize;
     }
     T operator[](size_t index) const {
         return get(index);
     }
-    T get(size_t) const;
-    void push_front(const T&);
+    T get(size_t index) const;
+    void push_front(const T& val);
     T pop_front();
-    void push_back(const T&);
-    void insert(size_t, const T&);
-    T erase(size_t);
-    void output(ostream&) const;
+    void push_back(const T& val);
+    void insert(size_t index, const T& val);
+    T erase(size_t index);
+    void output(ostream& out) const;
     void clear();
 
 protected:
@@ -71,7 +71,9 @@ void LinkedList<T>::push_front(const T& val) {
 template <typename T>
 T LinkedList<T>::pop_front() {
     assert(listSize > 0);
+    --listSize;
     auto toDelete = head->next;
+    if(toDelete == tail) tail = head;
     head->next = toDelete->next;
     T tmp = toDelete->val;
     delete toDelete;
@@ -143,3 +145,65 @@ ostream& operator<<(ostream& out, const LinkedList<T>& list) {
     list.output(out);
     return out;
 }
+
+template <typename T>
+class LinkedQueue {
+public:
+    LinkedQueue() {}
+    ~LinkedQueue() {}
+    T front() const {
+        assert(pool.size() > 0);
+        return pool.front();
+    }
+    T back() const {
+        assert(pool.size() > 0);
+        return pool.back();
+    }
+    size_t size() const {
+        return pool.size();
+    }
+    bool empty() const {
+        return pool.empty();
+    }
+    void push(const T& val) {
+        pool.push_back(val);
+    }
+    T pop() {
+        assert(pool.size() > 0);
+        return pool.pop_front();
+    }
+
+protected:
+    LinkedList<T> pool;
+};
+
+class MyCircularQueue {
+public:
+    LinkedQueue<int> q;
+    MyCircularQueue(int c) : capacity(c) {}
+    bool enQueue(int val) {
+        if(q.size() == capacity) return false;
+        q.push(val);
+        return true;
+    }
+    bool deQueue() {
+        if(q.empty()) return false;
+        q.pop();
+        return true;
+    }
+    int Front() {
+        return !q.empty() ? q.front() : -1;
+    }
+    int Rear() {
+        return !q.empty() ? q.back() : -1;
+    }
+    bool isEmpty() {
+        return q.empty();
+    }
+    bool isFull() {
+        return q.size() == capacity;
+    }
+
+protected:
+    int capacity;
+};

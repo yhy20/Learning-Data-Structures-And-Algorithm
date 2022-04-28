@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+//单向链表实现本题
 template <typename T>
 class LLNode {
 public:
@@ -35,13 +36,12 @@ public:
     T operator[](size_t index) const {
         return get(index);
     }
-    T get(size_t) const;
-    void push_front(const T&);
-    T pop_front();
-    void push_back(const T&);
-    void insert(size_t, const T&);
-    T erase(size_t);
-    void output(ostream&) const;
+    T get(size_t index) const;
+    void push_front(const T& val);
+    void push_back(const T& val);
+    void insert(size_t index, const T& val);
+    void erase(size_t index);
+    void output(ostream& out) const;
     void clear();
 
 protected:
@@ -69,16 +69,6 @@ void LinkedList<T>::push_front(const T& val) {
 }
 
 template <typename T>
-T LinkedList<T>::pop_front() {
-    assert(listSize > 0);
-    auto toDelete = head->next;
-    head->next = toDelete->next;
-    T tmp = toDelete->val;
-    delete toDelete;
-    return tmp;
-}
-
-template <typename T>
 void LinkedList<T>::push_back(const T& val) {
     ++listSize;
     tail->next = new LLNode<T>(val);
@@ -102,7 +92,7 @@ void LinkedList<T>::insert(size_t index, const T& val) {
 }
 
 template <typename T>
-T LinkedList<T>::erase(size_t index) {
+void LinkedList<T>::erase(size_t index) {
     assert(index >= 0 && index < listSize);
     --listSize;
     size_t t = 0;
@@ -111,11 +101,9 @@ T LinkedList<T>::erase(size_t index) {
         curr = curr->next;
     }
     if(curr->next == tail) tail = curr;
-    auto toDelete = curr->next;
-    curr->next = toDelete->next;
-    T tmp = toDelete->val;
-    delete toDelete;
-    return tmp;
+    LLNode<T>* next = curr->next->next;
+    delete curr->next;
+    curr->next = next;
 }
 
 template <typename T>
@@ -143,3 +131,36 @@ ostream& operator<<(ostream& out, const LinkedList<T>& list) {
     list.output(out);
     return out;
 }
+
+class MyLinkedList {
+public:
+    LinkedList<int> list;
+    MyLinkedList() {}
+
+    int get(int index) {
+        if(index < 0 || index >= list.size()) return -1;
+        return list.get(index);
+    }
+
+    void addAtHead(int val) {
+        list.push_front(val);
+    }
+
+    void addAtTail(int val) {
+        list.push_back(val);
+    }
+
+    void addAtIndex(int index, int val) {
+        if(index < 0) {
+            list.push_front(val);
+            return;
+        }
+        if(index > list.size()) return;
+        list.insert(index, val);
+    }
+
+    void deleteAtIndex(int index) {
+        if(index < 0 || index >= list.size()) return;
+        list.erase(index);
+    }
+};
